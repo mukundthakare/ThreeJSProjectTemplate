@@ -12,7 +12,13 @@ document.body.appendChild(renderer.domElement)
 
 new OrbitControls(camera, renderer.domElement);
 
-const axisControl = new THREE.AxesHelper(10);
+const cubeGeometry = new THREE.BoxGeometry(5, 5, 5);
+const material = new THREE.MeshBasicMaterial({ color: "red" });
+const cubeMesh = new THREE.Mesh(cubeGeometry, material);
+
+scene.add(cubeMesh);
+
+const axisControl = new THREE.AxesHelper(100);
 scene.add(axisControl);
 window.addEventListener('resize', onWindowResize, false)
 function onWindowResize() {
