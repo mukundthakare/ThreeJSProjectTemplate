@@ -18,46 +18,28 @@ document.body.appendChild(renderer.domElement)
 //4
 new OrbitControls(camera, renderer.domElement);
 
-//5
-// green
-const cubeGeometry = new THREE.BoxGeometry(10, 10, 10);
-const material = new THREE.MeshBasicMaterial({ color: "green" });
-const greenCubeMesh = new THREE.Mesh(cubeGeometry, material);
-greenCubeMesh.position.setY(10);
+const geometry = new THREE.BufferGeometry();
 
-// red
-const redCubeGeom = new THREE.BoxGeometry(15, 15, 15);
-const redCubeMaterial = new THREE.MeshBasicMaterial({ color: "red" });
-const redCubeMesh = new THREE.Mesh(redCubeGeom, redCubeMaterial);
-scene.add(redCubeMesh);
-redCubeMesh.position.setX(15);
+// create a simple square shape. We duplicate the top left and bottom right
+// vertices because each vertex needs to appear once per triangle.
+const vertices = new Float32Array([
+  -1.0, -1.0, 1.0, // v0
+  1.0, -1.0, 1.0, // v1
+  1.0, 1.0, 1.0, // v2
 
-// blue
-const blueCubeGeom = new THREE.BoxGeometry(20, 20, 20);
-const blueCubeMaterial = new THREE.MeshBasicMaterial({ color: "blue" });
-const blueCubeMesh = new THREE.Mesh(blueCubeGeom, blueCubeMaterial);
-scene.add(blueCubeMesh);
-blueCubeMesh.position.setZ(20);
-scene.add(greenCubeMesh);
+  1.0, 1.0, 1.0, // v3
+  -1.0, 1.0, 1.0, // v4
+  -1.0, -1.0, 1.0  // v5
+]);
+
+geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+const mesh = new THREE.Mesh(geometry, material);
+scene.add(mesh);
 
 //axes helper
 const axisControl = new THREE.AxesHelper(100);
 scene.add(axisControl);
-
-//grid helper
-const size = 100;
-const divisions = 100;
-const gridHelper = new THREE.GridHelper(size, divisions);
-scene.add(gridHelper);
-
-//box helper
-const sphere = new THREE.SphereGeometry(10);
-const sphereMaterial = new THREE.MeshBasicMaterial({ color: "yellow" });
-const sphereMesh = new THREE.Mesh(sphere, sphereMaterial);
-sphereMesh.position.setX(70);
-scene.add(sphereMesh);
-const box = new THREE.BoxHelper(sphereMesh, 0xffffff);
-scene.add(box);
 
 window.addEventListener('resize', onWindowResize, false)
 function onWindowResize() {
@@ -69,9 +51,6 @@ function onWindowResize() {
 
 function animate() {
   requestAnimationFrame(animate);
-  blueCubeMesh.rotateZ(0.2);
-  redCubeMesh.rotateX(0.2);
-  greenCubeMesh.rotateY(0.2);
   render();
 }
 
