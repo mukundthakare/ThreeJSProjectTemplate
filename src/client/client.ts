@@ -24,31 +24,54 @@ let orbitControls = new OrbitControls(camera, renderer.domElement);
 const axes = new THREE.AxesHelper(100);
 scene.add(axes);
 
-//6
-const coneGeometry = new THREE.ConeGeometry(2, 5, 32, 32);
-const boxGeometry = new THREE.BoxGeometry(5, 5, 5);
-const capsuleGeometry = new THREE.CapsuleGeometry(1, 2, 32, 32);
-const hedrongeometry = new THREE.DodecahedronGeometry(1, 1);
-const circleGeometry = new THREE.CircleGeometry(5, 32);
+const vecAB = new THREE.Vector2(1, 1);
+const matRotationUsingTheta = new THREE.Matrix3().makeRotation(Math.PI / 2);
+const matScalingUsingFun = new THREE.Matrix3().makeScale(5, 6);
+const matTranslationYUsingFun = new THREE.Matrix3().makeTranslation(new THREE.Vector2(5, 6));
 
-//7 create objects
-for (let i = 0; i < 1000; i++) {
-  let material = new THREE.MeshBasicMaterial({ color: 0xffff00 * Math.random() })
-  if (i < 200) {
-    createMeshFromGeometryAndMat(coneGeometry, material);
-  }
-  else if (i >= 200 && i < 400) {
-    createMeshFromGeometryAndMat(boxGeometry, material);
-  }
-  else if (i >= 400 && i < 600) {
-    createMeshFromGeometryAndMat(capsuleGeometry, material);
-  }
-  else if (i >= 600 && i < 800) {
-    createMeshFromGeometryAndMat(hedrongeometry, material);
-  } else {
-    createMeshFromGeometryAndMat(circleGeometry, material)
-  }
-}
+matScalingUsingFun.multiply(matTranslationYUsingFun);
+
+vecAB.applyMatrix3(matTranslationYUsingFun);
+vecAB.applyMatrix3(matScalingUsingFun);
+vecAB.applyMatrix3(matRotationUsingTheta);
+
+// create a 2*2 rotation matrix
+const matRotation = new THREE.Matrix3();
+matRotation.set(
+  0, -1, 0,
+  1, 0, 0,
+  0, 0, 1
+)
+
+const matTranslation = new THREE.Matrix3();
+matTranslation.set(
+  1, 0, 5,
+  0, 1, 6,
+  0, 0, 1
+)
+vecAB.applyMatrix3(matTranslation);
+
+const matScaling = new THREE.Matrix3();
+matScaling.set(
+  5, 0, 0,
+  0, 6, 0,
+  0, 0, 1
+);
+
+vecAB.applyMatrix3(matScaling);
+
+const matIdentity = new THREE.Matrix3();
+matIdentity.set(1, 0, 0, 0, 1, 0, 0, 0, 1);
+matIdentity.translate(5, 6);
+
+matIdentity.transpose();
+
+
+const mat4 = new THREE.Matrix4();
+mat4.set(1, 0, 0, 5, 0, 1, 0, 6, 0, 0, 1, 7, 0, 0, 0, 1);
+mat4.makeTranslation(5, 6, 7);
+const vecBD = new THREE.Vector3(5, 6, 7)
+vecBD.applyMatrix4(mat4);
 
 window.addEventListener('resize', onWindowResize, false)
 function onWindowResize() {
@@ -64,25 +87,10 @@ function animate() {
 }
 
 function render() {
-  scene.rotateX(0.01);
-  scene.rotateY(0.01);
-  scene.rotateZ(0.01);
+
   renderer.render(scene, camera)
-  for (let i = 0; i < 1000; i++) {
-    //   objects[i].rotateX(0.1);
-    //   objects[i].rotateY(0.1);
-    //   objects[i].rotateZ(0.1);
-    objects[i].scale.set(THREE.MathUtils.randFloatSpread(2), THREE.MathUtils.randFloatSpread(2), THREE.MathUtils.randFloatSpread(2))
-  }
+
 }
 
-function createMeshFromGeometryAndMat(geometry: THREE.BufferGeometry, material: THREE.MeshBasicMaterial) {
-  const mesh = new THREE.Mesh(geometry, material);
-  mesh.position.setX(THREE.MathUtils.randFloatSpread(100));
-  mesh.position.setY(THREE.MathUtils.randFloatSpread(100));
-  mesh.position.setZ(THREE.MathUtils.randFloatSpread(100));
-  scene.add(mesh);
-  objects.push(mesh);
-}
 
 animate()
